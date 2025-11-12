@@ -19,7 +19,7 @@
     /* Header / Logo */
     #welcomeHeader {
       width: 100%;
-      padding: 20px 0;
+      padding: 15px 20px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -28,17 +28,24 @@
       position: fixed;
       top: 0;
       z-index: 5;
+      gap: 40px; /* space between logo, name, timer */
     }
 
     #welcomeHeader img {
       height: 60px;
-      margin-right: 15px;
     }
 
     #welcomeHeader h2 {
       color: #ffffff;
-      font-size: 20px;
+      font-size: 22px;
       margin: 0;
+    }
+
+    /* Timer display */
+    #timer {
+      font-size: 36px; /* bold and large */
+      font-weight: bold;
+      color: #fa6c06; /* bright brown */
     }
 
     /* Welcome Screen */
@@ -48,7 +55,7 @@
       align-items: center;
       justify-content: center;
       flex-grow: 1;
-      margin-top: 120px; /* space for fixed header */
+      margin-top: 100px; /* space for fixed header */
       width: 100%;
     }
 
@@ -116,10 +123,10 @@
     #examForm {
       display: none;
       position: fixed;
-      top: 80px; /* below the fixed header */
+      top: 100px; /* below the fixed header */
       left: 0;
       width: 100%;
-      height: calc(100vh - 80px); /* fill remaining screen below header */
+      height: calc(100vh - 100px); /* fill remaining screen below header */
       border: none;
       z-index: 1;
     }
@@ -131,6 +138,7 @@
   <div id="welcomeHeader">
     <img src="logologo.jpeg" alt="Achievers Logo">
     <h2>ACHIEVERS INTERNATIONAL COLLEGE</h2>
+    <div id="timer">10:00</div>
   </div>
 
   <!-- Welcome Screen -->
@@ -156,6 +164,31 @@
       else if (element.msRequestFullscreen) element.msRequestFullscreen();
     }
 
+    let timerInterval;
+
+    function startTimer(durationMinutes) {
+      const timerDisplay = document.getElementById('timer');
+      let time = durationMinutes * 60; // convert minutes to seconds
+      timerDisplay.style.display = 'block';
+
+      timerInterval = setInterval(() => {
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        timerDisplay.textContent = 
+          `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+        // Change color when less than 2 minutes
+        if (time <= 120) {
+          timerDisplay.style.color = "#ff0000"; // red
+        }
+
+        if (--time < 0) {
+          clearInterval(timerInterval);
+          alert("Time's up! Please submit your exam.");
+        }
+      }, 1000);
+    }
+
     document.getElementById("startBtn").addEventListener("click", function() {
       let name = document.getElementById("studentName").value.trim();
       if (!name) {
@@ -165,19 +198,18 @@
 
       openFullscreen();
 
-      // Hide welcome box only (header remains)
       document.getElementById("welcomeScreen").style.display = "none";
 
-      // Show Google Form iframe with pre-filled name
       const iframe = document.getElementById("examForm");
       iframe.src =
         "https://docs.google.com/forms/d/e/1FAIpQLSctZW7PciKVl1rGy-U7VXdE_1sCnUC4sXqbBqlKdNNP_lpQLQ/viewform?usp=pp_url&entry.354690028=" +
         encodeURIComponent(name);
       iframe.style.display = "block";
+
+      startTimer(10);
     });
 
-    // Warn if user exits fullscreen
-    document.addEventListener('fullscreenchange', () => {
+    document.addEventListener("fullscreenchange", () => {
       if (!document.fullscreenElement) {
         alert("You exited full screen! The exam requires full screen mode.");
         location.reload();
