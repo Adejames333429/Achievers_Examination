@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Achievers International College - SS3 Data Processing Exam</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #fdf8f2, #f7f1e5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    /* Header / Logo */
+    #welcomeHeader {
+      width: 100%;
+      padding: 20px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #6A0DAD; /* onion purple */
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      z-index: 5;
+    }
+
+    #welcomeHeader img {
+      height: 60px;
+      margin-right: 15px;
+    }
+
+    #welcomeHeader h2 {
+      color: #ffffff;
+      font-size: 20px;
+      margin: 0;
+    }
+
+    /* Welcome Screen */
+    #welcomeScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      margin-top: 120px; /* space for fixed header */
+      width: 100%;
+    }
+
+    .welcomeBox {
+      background: rgba(255, 255, 255, 0.95);
+      border-left: 6px solid #6A0DAD;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .welcomeBox:hover {
+      transform: translateY(-5px);
+    }
+
+    .welcomeBox h2 {
+      margin-bottom: 5px;
+      color: #4b046f;
+      font-size: 24px;
+    }
+
+    .welcomeBox h3 {
+      margin-bottom: 20px;
+      color: #4b046f;
+      font-size: 18px;
+      font-weight: normal;
+    }
+
+    .welcomeBox p {
+      margin-bottom: 20px;
+      color: #3e2c1c;
+    }
+
+    input {
+      padding: 12px;
+      width: 100%;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      autocomplete: off;
+    }
+
+    button {
+      padding: 12px;
+      width: 100%;
+      background-color: #6A0DAD; /* onion purple */
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #5a0994;
+    }
+
+    /* Google Form iframe */
+    #examForm {
+      display: none;
+      position: fixed;
+      top: 80px; /* below the fixed header */
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 80px); /* fill remaining screen below header */
+      border: none;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Logo -->
+  <div id="welcomeHeader">
+    <img src="logologo.jpeg" alt="Achievers Logo">
+    <h2>ACHIEVERS INTERNATIONAL COLLEGE</h2>
+  </div>
+
+  <!-- Welcome Screen -->
+  <div id="welcomeScreen">
+    <div class="welcomeBox">
+      <h2>Welcome</h2>
+      <h3>First-Term Examination 2025/2026 Academic Session</h3>
+      <p>Please enter your full name to begin the exam.</p>
+      <input type="text" id="studentName" placeholder="Full Name" required autocomplete="off">
+      <button id="startBtn">Start Exam</button>
+    </div>
+  </div>
+
+  <!-- Google Form -->
+  <iframe id="examForm"></iframe>
+
+  <script>
+    function openFullscreen() {
+      let element = document.documentElement;
+      if (element.requestFullscreen) element.requestFullscreen();
+      else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
+      else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+      else if (element.msRequestFullscreen) element.msRequestFullscreen();
+    }
+
+    document.getElementById("startBtn").addEventListener("click", function() {
+      let name = document.getElementById("studentName").value.trim();
+      if (!name) {
+        alert("Please enter your name before starting.");
+        return;
+      }
+
+      openFullscreen();
+
+      // Hide welcome box only (header remains)
+      document.getElementById("welcomeScreen").style.display = "none";
+
+      // Show Google Form iframe with pre-filled name
+      const iframe = document.getElementById("examForm");
+      iframe.src =
+        "https://docs.google.com/forms/d/e/1FAIpQLSctZW7PciKVl1rGy-U7VXdE_1sCnUC4sXqbBqlKdNNP_lpQLQ/viewform?usp=pp_url&entry.354690028=" +
+        encodeURIComponent(name);
+      iframe.style.display = "block";
+    });
+
+    // Warn if user exits fullscreen
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        alert("You exited full screen! The exam requires full screen mode.");
+        location.reload();
+      }
+    });
+  </script>
+
+</body>
+</html>
