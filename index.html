@@ -213,7 +213,7 @@
       iframe.src = viewFormUrl + "?" + subjectData.entryID + "=" + encodeURIComponent(name);
       iframe.style.display = "block";
 
-      startTimer(15); // 60-minute exam
+      startTimer(60); // 60-minute exam
     });
 
     document.addEventListener("fullscreenchange", () => {
