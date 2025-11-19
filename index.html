@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Achievers International College - SS3 Data Processing Exam</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achievers International College - Online Exams</title>
   <style>
     html, body {
       margin: 0;
@@ -15,52 +17,44 @@
       align-items: center;
       justify-content: flex-start;
     }
-
-    /* Header / Logo */
     #welcomeHeader {
       width: 100%;
       padding: 15px 20px;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #6A0DAD; /* onion purple */
+      background-color: #6A0DAD;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       position: fixed;
       top: 0;
       z-index: 5;
-      gap: 40px; /* space between logo, name, timer */
+      gap: 40px;
     }
-
-    #welcomeHeader img {
-      height: 60px;
+    #welcomeHeader img { height: 60px; }
+    #welcomeHeader h2 { color: #ffffff; font-size: 22px; margin: 0; }
+    #timerAlertContainer {
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
-
-    #welcomeHeader h2 {
-      color: #ffffff;
-      font-size: 22px;
-      margin: 0;
+    #timer { font-size: 36px; font-weight: bold; color: #fa6c06; }
+    #submitAlert { 
+      color: red; 
+      font-weight: bold; 
+      display: none; 
+      font-size: 28px; /* bigger alert */
     }
-
-    /* Timer display */
-    #timer {
-      font-size: 36px; /* bold and large */
-      font-weight: bold;
-      color: #fa6c06; /* bright brown */
-    }
-
-    /* Welcome Screen */
     #welcomeScreen {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       flex-grow: 1;
-      margin-top: 100px; /* space for fixed header */
+      margin-top: 100px;
       width: 100%;
     }
-
     .welcomeBox {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255,255,255,0.95);
       border-left: 6px solid #6A0DAD;
       padding: 40px;
       border-radius: 12px;
@@ -70,43 +64,24 @@
       text-align: center;
       transition: transform 0.3s;
     }
-
-    .welcomeBox:hover {
-      transform: translateY(-5px);
-    }
-
-    .welcomeBox h2 {
-      margin-bottom: 5px;
-      color: #4b046f;
-      font-size: 24px;
-    }
-
-    .welcomeBox h3 {
-      margin-bottom: 20px;
-      color: #4b046f;
-      font-size: 18px;
-      font-weight: normal;
-    }
-
-    .welcomeBox p {
-      margin-bottom: 20px;
-      color: #3e2c1c;
-    }
-
-    input {
+    .welcomeBox:hover { transform: translateY(-5px); }
+    .welcomeBox h2 { margin-bottom: 5px; color: #4b046f; font-size: 24px; }
+    .welcomeBox h3 { margin-bottom: 20px; color: #4b046f; font-size: 18px; font-weight: normal; }
+    .welcomeBox p { margin-bottom: 20px; color: #3e2c1c; }
+    input, select {
       padding: 12px;
       width: 100%;
       margin-bottom: 20px;
       border-radius: 5px;
       border: 1px solid #ccc;
       font-size: 16px;
-      autocomplete: off;
+      background-color: #fff;
+      outline: none;
     }
-
     button {
       padding: 12px;
       width: 100%;
-      background-color: #6A0DAD; /* onion purple */
+      background-color: #6A0DAD;
       color: #ffffff;
       border: none;
       border-radius: 5px;
@@ -114,19 +89,14 @@
       font-size: 16px;
       transition: background 0.3s;
     }
-
-    button:hover {
-      background-color: #5a0994;
-    }
-
-    /* Google Form iframe */
+    button:hover { background-color: #5a0994; }
     #examForm {
       display: none;
       position: fixed;
-      top: 100px; /* below the fixed header */
+      top: 100px;
       left: 0;
       width: 100%;
-      height: calc(100vh - 100px); /* fill remaining screen below header */
+      height: calc(100vh - 100px);
       border: none;
       z-index: 1;
     }
@@ -134,25 +104,33 @@
 </head>
 <body>
 
-  <!-- Header / Logo -->
   <div id="welcomeHeader">
     <img src="logologo.jpeg" alt="Achievers Logo">
     <h2>ACHIEVERS INTERNATIONAL COLLEGE</h2>
-    <div id="timer">10:00</div>
+    <div id="timerAlertContainer">
+      <div id="timer">60:00</div>
+      <div id="submitAlert">Submit your exam now!</div>
+    </div>
   </div>
 
-  <!-- Welcome Screen -->
   <div id="welcomeScreen">
     <div class="welcomeBox">
       <h2>Welcome</h2>
       <h3>First-Term Examination 2025/2026 Academic Session</h3>
-      <p>Please enter your full name to begin the exam.</p>
+      <p>Please enter your full name and select your subject to begin the exam.</p>
       <input type="text" id="studentName" placeholder="Full Name" required autocomplete="off">
+      
+      <select id="subjectSelect" required>
+        <option value="">-- Select Subject --</option>
+        <option value="Physics Examination">Physics Examination</option>
+        <option value="Commerce Examination">Commerce Examination</option>
+        <option value="Literature-In-English Examination">Literature-In-English Examination</option>
+      </select>
+
       <button id="startBtn">Start Exam</button>
     </div>
   </div>
 
-  <!-- Google Form -->
   <iframe id="examForm"></iframe>
 
   <script>
@@ -165,48 +143,77 @@
     }
 
     let timerInterval;
+    let blinkInterval;
 
     function startTimer(durationMinutes) {
       const timerDisplay = document.getElementById('timer');
-      let time = durationMinutes * 60; // convert minutes to seconds
+      const submitAlert = document.getElementById('submitAlert');
+      let time = durationMinutes * 60;
       timerDisplay.style.display = 'block';
 
       timerInterval = setInterval(() => {
         let minutes = Math.floor(time / 60);
         let seconds = time % 60;
-        timerDisplay.textContent = 
-          `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+        timerDisplay.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
 
-        // Change color when less than 2 minutes
-        if (time <= 120) {
-          timerDisplay.style.color = "#ff0000"; // red
+        // Show submit alert at 45 minutes elapsed (15 minutes left)
+        if (time === 900) { 
+          submitAlert.style.display = 'block';
+        }
+
+        // Start blinking timer in the last 15 minutes (15:00 - 0:00)
+        if (time <= 900 && !blinkInterval){
+          timerDisplay.style.color = "#ff0000";
+          blinkInterval = setInterval(() => {
+            timerDisplay.style.visibility = (timerDisplay.style.visibility === 'hidden') ? 'visible' : 'hidden';
+          }, 500);
         }
 
         if (--time < 0) {
           clearInterval(timerInterval);
-          alert("Time's up! Please submit your exam.");
+          if (blinkInterval) clearInterval(blinkInterval);
+          timerDisplay.style.visibility = 'visible';
+          submitAlert.style.display = 'none';
         }
       }, 1000);
     }
 
-    document.getElementById("startBtn").addEventListener("click", function() {
-      let name = document.getElementById("studentName").value.trim();
-      if (!name) {
-        alert("Please enter your name before starting.");
-        return;
+    const subjectMap = {
+      "Physics Examination": {
+        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeYYy4j_lKKfXVuCjqWr2I3n3UWSlxKaIAhQ2ttZNCquUQ1Qg/formResponse",
+        entryID: "entry.1995605692"
+      },
+      "Commerce Examination": {
+        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSef3UTvPLqb6ZwLoUP4SCIfRLwOFUejuUTrWwJsNy9OZe_nWQ/formResponse",
+        entryID: "entry.2037870684"
+      },
+      "Literature-In-English Examination": {
+        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdRQx0yj5ApsvlHGSSo2LYnEKbOYErYVjOOHHckLSkJ6qpm3w/formResponse",
+        entryID: "entry.1339666395"
       }
+    };
+
+    document.getElementById("startBtn").addEventListener("click", function() {
+      const name = document.getElementById("studentName").value.trim();
+      const selectedText = document.getElementById("subjectSelect").value;
+
+      if(!name){ alert("Please enter your name before starting."); return; }
+      if(!selectedText){ alert("Please select your subject before starting."); return; }
+
+      const subjectData = subjectMap[selectedText];
+      if(!subjectData){ alert("Invalid subject selected."); return; }
 
       openFullscreen();
-
       document.getElementById("welcomeScreen").style.display = "none";
 
       const iframe = document.getElementById("examForm");
-      iframe.src =
-        "https://docs.google.com/forms/d/e/1FAIpQLSctZW7PciKVl1rGy-U7VXdE_1sCnUC4sXqbBqlKdNNP_lpQLQ/viewform?usp=pp_url&entry.354690028=" +
-        encodeURIComponent(name);
+
+      // Load the VIEW FORM for writing
+      const viewFormUrl = subjectData.submitUrl.replace("formResponse", "viewform");
+      iframe.src = viewFormUrl + "?" + subjectData.entryID + "=" + encodeURIComponent(name);
       iframe.style.display = "block";
 
-      startTimer(10);
+      startTimer(15); // 60-minute exam
     });
 
     document.addEventListener("fullscreenchange", () => {
