@@ -11,12 +11,28 @@
       height: 100%;
       width: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #fdf8f2, #f7f1e5);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
+      /* Gradient + beautiful background image */
+      background: linear-gradient(to bottom, rgba(253,248,242,0.9), rgba(247,241,229,0.9)), 
+                  url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
     }
+
+    /* Optional overlay to make text readable */
+    #bgOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.25);
+      z-index: -1;
+      pointer-events: none;
+    }
+
     #welcomeHeader {
       width: 100%;
       padding: 15px 20px;
@@ -37,13 +53,14 @@
       align-items: center;
       gap: 20px;
     }
-    #timer { font-size: 36px; font-weight: bold; color: #fa6c06; }
+    #timer { font-size: 36px; font-weight: bold; color: #fa6c06; transition: color 0.5s; }
     #submitAlert { 
       color: red; 
       font-weight: bold; 
       display: none; 
-      font-size: 28px; /* bigger alert */
+      font-size: 28px; 
     }
+
     #welcomeScreen {
       display: flex;
       flex-direction: column;
@@ -53,6 +70,7 @@
       margin-top: 100px;
       width: 100%;
     }
+
     .welcomeBox {
       background: rgba(255,255,255,0.95);
       border-left: 6px solid #6A0DAD;
@@ -81,15 +99,19 @@
     button {
       padding: 12px;
       width: 100%;
-      background-color: #6A0DAD;
+      background: linear-gradient(to right, #6A0DAD, #9b30ff);
       color: #ffffff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.2s;
     }
-    button:hover { background-color: #5a0994; }
+    button:hover { 
+      background: linear-gradient(to right, #5a0994, #7a0dcd);
+      transform: scale(1.02);
+    }
+
     #examForm {
       display: none;
       position: fixed;
@@ -104,11 +126,13 @@
 </head>
 <body>
 
+  <div id="bgOverlay"></div>
+
   <div id="welcomeHeader">
     <img src="logologo.jpeg" alt="Achievers Logo">
     <h2>ACHIEVERS INTERNATIONAL COLLEGE</h2>
     <div id="timerAlertContainer">
-      <div id="timer">60:00</div>
+      <div id="timer">50:00</div>
       <div id="submitAlert">Submit your exam now!</div>
     </div>
   </div>
@@ -122,9 +146,7 @@
       
       <select id="subjectSelect" required>
         <option value="">-- Select Subject --</option>
-        <option value="Financial Accounting Examination">Financial Accounting Examination</option>
-        <option value="Chemistry Examination">Chemistry Examination</option>
-        <option value="Government Examination">Government Examination</option>
+        <option value="Geography Examination">Geography Examination</option>
       </select>
 
       <button id="startBtn">Start Exam</button>
@@ -156,13 +178,9 @@
         let seconds = time % 60;
         timerDisplay.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
 
-        // Show submit alert at 45 minutes elapsed (15 minutes left)
-        if (time === 900) { 
+        // Start blinking + show submit alert after 35 minutes elapsed (15 minutes left)
+        if (time === 15 * 60) { 
           submitAlert.style.display = 'block';
-        }
-
-        // Start blinking timer in the last 15 minutes (15:00 - 0:00)
-        if (time <= 900 && !blinkInterval){
           timerDisplay.style.color = "#ff0000";
           blinkInterval = setInterval(() => {
             timerDisplay.style.visibility = (timerDisplay.style.visibility === 'hidden') ? 'visible' : 'hidden';
@@ -179,17 +197,9 @@
     }
 
     const subjectMap = {
-      "Financial Accounting Examination": {
-        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeLlFRh_opBDpk6QiDfGj2opX5CIQ-23OhUymbfQyWL2afqHg/viewform",
-        entryID: "entry.380532068"
-      },
-      "Chemistry Examination": {
-        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdKimAiEzqhSzKDpRERMmLYLvOvlKJiVN39U5_4fuCUoB3NUg/viewform",
-        entryID: "entry.611819838"
-      },
-      "Government Examination": {
-        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeMgkxvQES032XDnJKxXS4_vWaFgt2LEeRydgZXwEmLraFLxA/viewform",
-        entryID: "entry.1472408797"
+      "Geography Examination": {
+        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfhNfkQl09lgRmi4jphAmVhP6dBgkwh2GoAU37GVEHXWv9FdQ/viewform",
+        entryID: "entry.1863870858"
       }
     };
 
@@ -207,13 +217,11 @@
       document.getElementById("welcomeScreen").style.display = "none";
 
       const iframe = document.getElementById("examForm");
-
-      // Load the VIEW FORM for writing
       const viewFormUrl = subjectData.submitUrl.replace("formResponse", "viewform");
       iframe.src = viewFormUrl + "?" + subjectData.entryID + "=" + encodeURIComponent(name);
       iframe.style.display = "block";
 
-      startTimer(60); // 60-minute exam
+      startTimer(50); // 50-minute exam
     });
 
     document.addEventListener("fullscreenchange", () => {
