@@ -15,9 +15,10 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      background: linear-gradient(to bottom, rgba(253,248,242,0.9), rgba(247,241,229,0.9)), 
-                  url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background: linear-gradient(to bottom, rgba(253,248,242,0.3), rgba(247,241,229,0.1)),
+                  url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
       background-size: cover;
+      overflow: hidden;
     }
 
     #bgOverlay {
@@ -67,23 +68,35 @@
       flex-grow: 1;
       margin-top: 100px;
       width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Pulsing glow animation for welcome box */
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 10px rgba(106,13,173,0.4); }
+      50% { box-shadow: 0 0 25px rgba(106,13,173,0.7); }
+      100% { box-shadow: 0 0 10px rgba(106,13,173,0.4); }
     }
 
     .welcomeBox {
-      background: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.80);
       border-left: 6px solid #6A0DAD;
       padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
       max-width: 420px;
       width: 90%;
       text-align: center;
       transition: transform 0.3s;
+      animation: pulseGlow 2s infinite;
+      position: relative;
+      z-index: 2;
     }
     .welcomeBox:hover { transform: translateY(-5px); }
     .welcomeBox h2 { margin-bottom: 5px; color: #4b046f; font-size: 24px; }
     .welcomeBox h3 { margin-bottom: 20px; color: #4b046f; font-size: 18px; font-weight: normal; }
     .welcomeBox p { margin-bottom: 20px; color: #3e2c1c; }
+
     input, select {
       padding: 12px;
       width: 100%;
@@ -93,21 +106,45 @@
       font-size: 16px;
       background-color: #fff;
       outline: none;
+      transition: border 0.3s, box-shadow 0.3s;
     }
+    input:focus, select:focus {
+      border: 2px solid #6A0DAD;
+      box-shadow: 0 0 8px rgba(106,13,173,0.5);
+      outline: none;
+    }
+
+    /* Animated Start Exam Button */
     button {
       padding: 12px;
       width: 100%;
-      background: linear-gradient(to right, #6A0DAD, #9b30ff);
+      background: linear-gradient(270deg, #6A0DAD, #9b30ff, #6A0DAD);
+      background-size: 600% 600%;
       color: #ffffff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
-      transition: background 0.3s, transform 0.2s;
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: gradientShift 8s ease infinite;
     }
+
     button:hover { 
-      background: linear-gradient(to right, #5a0994, #7a0dcd);
-      transform: scale(1.02);
+      animation: rainbowShift 3s linear infinite;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 15px rgba(155,48,255,0.7), 0 0 25px rgba(106,13,173,0.5);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes rainbowShift {
+      0% { background-position: 0% 50%; background-image: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet); }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     #examForm {
@@ -120,6 +157,33 @@
       border: none;
       z-index: 1;
     }
+
+    /* Canvas for floating particles */
+    #particlesCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Floating educational icons */
+    .floating-icon {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      opacity: 0.2;
+      animation: floatUp linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) translateX(0) rotate(0deg); }
+      100% { transform: translateY(-50px) translateX(30px) rotate(360deg); }
+    }
+
   </style>
 </head>
 <body>
@@ -130,23 +194,30 @@
     <img src="logologo.jpeg" alt="Achievers Logo">
     <h2>ACHIEVERS INTERNATIONAL COLLEGE</h2>
     <div id="timerAlertContainer">
-      <div id="timer">1:30:00</div>
+      <div id="timer">50:00</div>
       <div id="submitAlert">Submit your exam now!</div>
     </div>
   </div>
 
   <div id="welcomeScreen">
+    <canvas id="particlesCanvas"></canvas>
+
+    <!-- Floating educational icons -->
+    <img src="https://img.icons8.com/ios-filled/50/000000/book.png" class="floating-icon" style="left:10%; animation-duration: 20s;">
+    <img src="https://img.icons8.com/ios-filled/50/000000/pencil.png" class="floating-icon" style="left:30%; animation-duration: 25s;">
+    <img src="https://img.icons8.com/ios-filled/50/000000/graduation-cap.png" class="floating-icon" style="left:50%; animation-duration: 22s;">
+    <img src="https://img.icons8.com/ios-filled/50/000000/book.png" class="floating-icon" style="left:70%; animation-duration: 28s;">
+    <img src="https://img.icons8.com/ios-filled/50/000000/pencil.png" class="floating-icon" style="left:85%; animation-duration: 24s;">
+
     <div class="welcomeBox">
       <h2>Welcome</h2>
       <h3>First-Term Examination 2025/2026 Academic Session</h3>
       <p>Please enter your full name and select your subject to begin the exam.</p>
       <input type="text" id="studentName" placeholder="Full Name" required autocomplete="off">
-      
       <select id="subjectSelect" required>
         <option value="">-- Select Subject --</option>
-        <option value="Mathematics Examination">Mathematics Examination</option>
+        <option value="Agricultural Science Examination">Agricultural Science Examination</option>
       </select>
-
       <button id="startBtn">Start Exam</button>
     </div>
   </div>
@@ -163,50 +234,49 @@
     }
 
     let timerInterval;
-    let blinkInterval;
-
-    function startTimer(durationMinutes) {
+    function startTimer() {
       const timerDisplay = document.getElementById('timer');
       const submitAlert = document.getElementById('submitAlert');
-      let time = durationMinutes * 60;
-      timerDisplay.style.display = 'block';
+      let totalTime = 50 * 60;
+      const blinkTime = 15 * 60;
+      let blink = false;
 
       timerInterval = setInterval(() => {
-        let hours = Math.floor(time / 3600);
-        let minutes = Math.floor((time % 3600) / 60);
-        let seconds = time % 60;
+        let minutes = Math.floor(totalTime / 60);
+        let seconds = totalTime % 60;
+        timerDisplay.textContent = 
+          (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+          (seconds < 10 ? "0" + seconds : seconds);
 
-        timerDisplay.textContent = `${hours}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-
-        // Start blinking + show submit alert after 1hr 15min elapsed (15 minutes left)
-        if (time === 15 * 60) { 
-          submitAlert.style.display = 'block';
-          timerDisplay.style.color = "#ff0000";
-          blinkInterval = setInterval(() => {
-            timerDisplay.style.visibility = (timerDisplay.style.visibility === 'hidden') ? 'visible' : 'hidden';
-          }, 500);
+        if (totalTime <= blinkTime) {
+          blink = !blink;
+          timerDisplay.style.visibility = blink ? "visible" : "hidden";
+          timerDisplay.style.color = "red";
+          submitAlert.style.display = "block";
         }
 
-        if (--time < 0) {
+        if (totalTime <= 0) {
           clearInterval(timerInterval);
-          if (blinkInterval) clearInterval(blinkInterval);
-          timerDisplay.style.visibility = 'visible';
-          submitAlert.style.display = 'none';
+          timerDisplay.textContent = "00:00";
+          timerDisplay.style.visibility = "visible";
+          submitAlert.textContent = "TIME UP! SUBMIT NOW!";
+          submitAlert.style.display = "block";
         }
+
+        totalTime--;
       }, 1000);
     }
 
     const subjectMap = {
-      "Mathematics Examination": {
-        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfy74SGjTckf0x5zDISdkjI3fGdz_m-0_Q8lJiGkjHWeaWleA/viewform",
-        entryID: "entry.520860116"
+      "Agricultural Science Examination": {
+        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSe8ZJfRY-pE8BJ8kyPQnklnTqgMmXDMrKXUA2_xrbpRgfAnAg/viewform",
+        entryID: "entry.1913041367"
       }
     };
 
     document.getElementById("startBtn").addEventListener("click", function() {
       const name = document.getElementById("studentName").value.trim();
       const selectedText = document.getElementById("subjectSelect").value;
-
       if(!name){ alert("Please enter your name before starting."); return; }
       if(!selectedText){ alert("Please select your subject before starting."); return; }
 
@@ -221,7 +291,7 @@
       iframe.src = viewFormUrl + "?" + subjectData.entryID + "=" + encodeURIComponent(name);
       iframe.style.display = "block";
 
-      startTimer(90); // 1hr 30min exam
+      startTimer();
     });
 
     document.addEventListener("fullscreenchange", () => {
@@ -229,6 +299,54 @@
         alert("You exited full screen! The exam requires full screen mode.");
         location.reload();
       }
+    });
+
+    // Particle animation
+    const canvas = document.getElementById("particlesCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particlesArray = [];
+    const colors = ["rgba(255,255,255,0.7)", "rgba(255,255,255,0.5)"];
+
+    class Particle {
+      constructor(){
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.radius = Math.random() * 2 + 1;
+        this.speedY = Math.random() * 0.5 + 0.2;
+      }
+      update(){
+        this.y -= this.speedY;
+        if(this.y < 0) this.y = canvas.height;
+      }
+      draw(){
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = colors[Math.floor(Math.random()*colors.length)];
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      for(let i=0; i<100; i++){
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      particlesArray.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     });
   </script>
 
