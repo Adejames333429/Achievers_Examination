@@ -216,8 +216,8 @@
       <input type="text" id="studentName" placeholder="Full Name" required autocomplete="off">
       <select id="subjectSelect" required>
         <option value="">-- Select Subject --</option>
-        <option value="Biology Examination">Biology Examination</option>
-        <option value="Economics Examination">Economics Examination</option>
+        <option value="Civic Education Examination">Civic Education Examination</option>
+        <!-- <option value="Economics Examination">Economics Examination</option> -->
       </select>
       <button id="startBtn">Start Exam</button>
     </div>
@@ -269,14 +269,14 @@
     }
 
     const subjectMap = {
-      "Biology Examination": {
-        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLScpa_P4oJE06bE8gWFK1RDCrUuy92hywJGx44qq7WMksRJJvQ/viewform",
-        entryID: "entry.1559764821"
+      "Civic Education Examination": {
+        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdZvZ92B57ftWkvBipdT6gBthWHo7LPvV9z7wjX0gP_9XOvWA/viewform",
+        entryID: "entry.1539166695"
       },
-      "Economics Examination": {
-        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLScU3K7WI8DJP-iERCDguHFmMWFq0G1i2zQS-TmtwD6nsSVTIw/viewform",
-        entryID: "entry.1129060646"
-      }
+      // "Economics Examination": {
+      //   submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLScU3K7WI8DJP-iERCDguHFmMWFq0G1i2zQS-TmtwD6nsSVTIw/viewform",
+      //   entryID: "entry.1129060646"
+      // }
     };
 
     document.getElementById("startBtn").addEventListener("click", function() {
