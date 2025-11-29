@@ -47,12 +47,20 @@
     }
     #welcomeHeader img { height: 60px; }
     #welcomeHeader h2 { color: #ffffff; font-size: 22px; margin: 0; }
+
     #timerAlertContainer {
       display: flex;
       align-items: center;
       gap: 20px;
     }
-    #timer { font-size: 36px; font-weight: bold; color: #fa6c06; transition: color 0.5s; }
+
+    #timer { 
+      font-size: 36px; 
+      font-weight: bold; 
+      color: #fa6c06; 
+      transition: color 0.5s; 
+    }
+
     #submitAlert { 
       color: red; 
       font-weight: bold; 
@@ -72,7 +80,6 @@
       z-index: 2;
     }
 
-    /* Pulsing glow animation for welcome box */
     @keyframes pulseGlow {
       0% { box-shadow: 0 0 10px rgba(106,13,173,0.4); }
       50% { box-shadow: 0 0 25px rgba(106,13,173,0.7); }
@@ -92,7 +99,9 @@
       position: relative;
       z-index: 2;
     }
+
     .welcomeBox:hover { transform: translateY(-5px); }
+
     .welcomeBox h2 { margin-bottom: 5px; color: #4b046f; font-size: 24px; }
     .welcomeBox h3 { margin-bottom: 20px; color: #4b046f; font-size: 18px; font-weight: normal; }
     .welcomeBox p { margin-bottom: 20px; color: #3e2c1c; }
@@ -108,13 +117,13 @@
       outline: none;
       transition: border 0.3s, box-shadow 0.3s;
     }
+
     input:focus, select:focus {
       border: 2px solid #6A0DAD;
       box-shadow: 0 0 8px rgba(106,13,173,0.5);
       outline: none;
     }
 
-    /* Animated Start Exam Button */
     button {
       padding: 12px;
       width: 100%;
@@ -158,7 +167,6 @@
       z-index: 1;
     }
 
-    /* Canvas for floating particles */
     #particlesCanvas {
       position: absolute;
       top: 0;
@@ -169,7 +177,6 @@
       pointer-events: none;
     }
 
-    /* Floating educational icons */
     .floating-icon {
       position: absolute;
       width: 30px;
@@ -186,6 +193,7 @@
 
   </style>
 </head>
+
 <body>
 
   <div id="bgOverlay"></div>
@@ -194,15 +202,15 @@
     <img src="logologo.jpeg" alt="Achievers Logo">
     <h2>ACHIEVERS INTERNATIONAL COLLEGE</h2>
     <div id="timerAlertContainer">
-      <div id="timer">50:00</div>
+      <div id="timer">105:00</div>
       <div id="submitAlert">Submit your exam now!</div>
     </div>
   </div>
 
   <div id="welcomeScreen">
+
     <canvas id="particlesCanvas"></canvas>
 
-    <!-- Floating educational icons -->
     <img src="https://img.icons8.com/ios-filled/50/000000/book.png" class="floating-icon" style="left:10%; animation-duration: 20s;">
     <img src="https://img.icons8.com/ios-filled/50/000000/pencil.png" class="floating-icon" style="left:30%; animation-duration: 25s;">
     <img src="https://img.icons8.com/ios-filled/50/000000/graduation-cap.png" class="floating-icon" style="left:50%; animation-duration: 22s;">
@@ -213,12 +221,14 @@
       <h2>Welcome</h2>
       <h3>First-Term Examination 2025/2026 Academic Session</h3>
       <p>Please enter your full name and select your subject to begin the exam.</p>
+
       <input type="text" id="studentName" placeholder="Full Name" required autocomplete="off">
+
       <select id="subjectSelect" required>
         <option value="">-- Select Subject --</option>
-        <option value="Civic Education Examination">Civic Education Examination</option>
-        <!-- <option value="Economics Examination">Economics Examination</option> -->
+        <option value="Further Mathematics Examination">Further Mathematics Examination</option>
       </select>
+
       <button id="startBtn">Start Exam</button>
     </div>
   </div>
@@ -235,16 +245,20 @@
     }
 
     let timerInterval;
+
     function startTimer() {
       const timerDisplay = document.getElementById('timer');
       const submitAlert = document.getElementById('submitAlert');
-      let totalTime = 50 * 60;
+
+      let totalTime = 105 * 60; // UPDATED TO 1HR 45MINS
       const blinkTime = 15 * 60;
       let blink = false;
 
       timerInterval = setInterval(() => {
+
         let minutes = Math.floor(totalTime / 60);
         let seconds = totalTime % 60;
+
         timerDisplay.textContent = 
           (minutes < 10 ? "0" + minutes : minutes) + ":" + 
           (seconds < 10 ? "0" + seconds : seconds);
@@ -269,19 +283,17 @@
     }
 
     const subjectMap = {
-      "Civic Education Examination": {
-        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdZvZ92B57ftWkvBipdT6gBthWHo7LPvV9z7wjX0gP_9XOvWA/viewform",
-        entryID: "entry.1539166695"
-      },
-      // "Economics Examination": {
-      //   submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLScU3K7WI8DJP-iERCDguHFmMWFq0G1i2zQS-TmtwD6nsSVTIw/viewform",
-      //   entryID: "entry.1129060646"
-      // }
+      "Further Mathematics Examination": {
+        submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLScwWc0knbK1YiKpTFjbEtWDeCk3RLqUShmEkLITjvGzGbpgPg/viewform",
+        entryID: "entry.1522719571"
+      }
     };
 
     document.getElementById("startBtn").addEventListener("click", function() {
+
       const name = document.getElementById("studentName").value.trim();
       const selectedText = document.getElementById("subjectSelect").value;
+
       if(!name){ alert("Please enter your name before starting."); return; }
       if(!selectedText){ alert("Please select your subject before starting."); return; }
 
@@ -293,6 +305,7 @@
 
       const iframe = document.getElementById("examForm");
       const viewFormUrl = subjectData.submitUrl.replace("formResponse", "viewform");
+
       iframe.src = viewFormUrl + "?" + subjectData.entryID + "=" + encodeURIComponent(name);
       iframe.style.display = "block";
 
@@ -353,6 +366,7 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     });
+
   </script>
 
 </body>
